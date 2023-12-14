@@ -84,16 +84,17 @@ char **getcmdstring(char *__restrict__ arg)
 		{"push", monty_push_stack}, {"pop", monty_pop_stack}			\
 		,{"pall", monty_print_stack}, {"pint", monty_pint_stack}		\
 		,{"swap", monty_swap_stack}, {"add", monty_add_stack}			\
-		,{"sub", monty_sub_stack}, {"nop", monty_nop_stack}				\
+		,{"sub", monty_sub_stack}, {"nop", monty_nop_stack}, NULL			\
 	}
 int main(int argc, char **argv)
 {
-	register int fd;
+	register int oo, lncnt = 1;
 	FILE *F;
 	char *bytefile = NULL;
-	char *ln = NULL, **instrc = NULL;
+	char *ln = NULL, *tmp, **instrc = NULL;
 	size_t rd = 0;
-	instruction_t btyInst[] = _MAP_OP_INSTRUCTION_R();
+	instruction_t op_routine[] = _MAP_OP_INSTRUCTION_R();
+	stack_t *monty_stack;
 
 	if (argc != 2)
 	{
@@ -108,7 +109,7 @@ int main(int argc, char **argv)
 		fprintf(stderr, "Error: Can't open file <%s>\n", bytefile);
 		exit(EXIT_FAILURE);
 	}
-	while (1)
+	while (lncnt++)
 	{
 		if (getline(&ln, &rd, F) == -1)
 		{
@@ -119,11 +120,18 @@ int main(int argc, char **argv)
 			}
 			break;
 		}
+		/* get the instructions from each line */
 		instrc = getcmdstring(ln);
-		while (*instrc != NULL)
+		for (oo = 0; (tmp = op_routine[oo].opcode) != NULL; oo++)
 		{
-			puts(*instrc);
-			instrc++;
+			if (strcmp(tmp, *instrc) == 0)
+				op_routine[oo].routine(&monty_stack, lncnt);
+		}
+		/* if tmp ever gets to null, that means there isn't any opcode that matches the inputed instruction */
+		if (tmp == NULL)
+		{
+			fprintf(stderr, "L<%d>: unknown instruction <%s>\n", lncnt, ln);
+			exit(EXIT_FAILURE);
 		}
 		rd = 0;
 		free(ln);
