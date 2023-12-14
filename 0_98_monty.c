@@ -79,13 +79,19 @@ char **getcmdstring(char *__restrict__ arg)
 	return buftok;
 }
 
+#define _MAP_INSTRUCTION_R()\
+	{														\
+		{"push", monty_push_stack}, {"pop", monty_pop_stack}	\
+		{"pall", monty_print_stack}, {"pint", monty_pint_stack}	\
+	}
 int main(int argc, char **argv)
 {
 	register int fd;
 	FILE *F;
 	char *bytefile = NULL;
-	char *ln = NULL, *instrc = NULL;
+	char *ln = NULL, **instrc = NULL;
 	size_t rd = 0;
+	instruction_s btyInst[] = _MAP_INSTRUCTION_R();
 
 	if (argc != 2)
 	{
@@ -112,6 +118,11 @@ int main(int argc, char **argv)
 			break;
 		}
 		instrc = getcmdstring(ln);
+		while (*instrc != NULL)
+		{
+			puts(*instrc);
+			instrc++;
+		}
 		rd = 0;
 		free(ln);
 		ln = NULL;
