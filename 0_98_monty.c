@@ -94,7 +94,7 @@ int main(int argc, char **argv)
 	char *ln = NULL, *tmp, **instrc = NULL;
 	size_t rd = 0;
 	instruction_t op_routine[] = _MAP_OP_INSTRUCTION_R();
-	stack_t *monty_stack;
+	stack_t *monty_stack = NULL;
 
 	if (argc != 2)
 	{
@@ -131,12 +131,14 @@ int main(int argc, char **argv)
 		if (tmp == NULL)
 		{
 			fprintf(stderr, "L<%d>: unknown instruction <%s>\n", lncnt, ln);
+			/* TODO: do cleanup here */
 			exit(EXIT_FAILURE);
 		}
 		rd = 0;
 		free(ln);
 		ln = NULL;
 	}
+/* TODO: do clean up here */
 	if (fclose(F) == EOF)
 	{
 		perror("flcose");
