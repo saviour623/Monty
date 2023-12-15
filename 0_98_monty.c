@@ -1,5 +1,6 @@
 #include "monty.h"
 #include <stdbool.h>
+_global_tmp glbstack_s;
 
 /**
  * delimCharcmp - check if a char is a delimiter.
@@ -135,6 +136,7 @@ int main(int argc, char **argv)
 		fprintf(stderr, "Error: Can't open file <%s>\n", bytefile);
 		exit(EXIT_FAILURE);
 	}
+	glbstack_s.stk_mode |= S_OPSTACK;
 	for (; true; lncnt++)
 	{
 		if (getline(&ln, &rd, F) == -1)
@@ -153,7 +155,8 @@ int main(int argc, char **argv)
 			if (strcmp(tmp, *instrc) == 0)
 			{
 				/* TODO: if opcode requires a value and none is given or an errorneous value is given raise an error */
-				get_int(instrc[1], &vlue) == -1 ? (vlue = -INT_MAX) : 0;
+				glbstack_s.stk_line = lncnt;
+				glbstack_s.stk_mode = !(get_int(instrc[1], &vlue)) & S_VALNPUT;
 				op_routine[oo].routine(&monty_stack, vlue);
 				goto reuse;
 			}

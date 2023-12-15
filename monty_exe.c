@@ -1,4 +1,7 @@
 #include "monty.h"
+extern _global_tmp glbstack_s;
+//stk_line
+//stk_stque
 void monty_push_stack(stack_t **stack, unsigned int line_number)
 {
 	stack_t *new_stack = malloc(sizeof(stack_t));
@@ -8,11 +11,18 @@ void monty_push_stack(stack_t **stack, unsigned int line_number)
 		fprintf(stderr, "ERROR: malloc failed\n");
 		exit(EXIT_FAILURE);
 	}
+	if (!(glbstack_s.stk_mode & S_VALNPUT))
+	{
+		fprintf(stderr, "L<%u>: usage: push integer\n", glbstack_s.stk_line);
+		exit(EXIT_FAILURE);
+	}
 	if (*stack == NULL)
 	{
 		new_stack->prev = new_stack->next = NULL;
 		new_stack->n = line_number;
 		*stack = new_stack;
+		/* update the global stack head */
+		glbstack_s.stk_stque = stack;
 	}
 	else
 	{

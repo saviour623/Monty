@@ -16,6 +16,9 @@
 #else
 #define __unused__ [[unused]]
 #endif
+#define S_OPQUEUE 0x04
+#define S_OPSTACK 0x02
+#define S_VALNPUT 0X01
 /**
  * struct stack_s - doubly linked list representation of a stack (or queue)
  * @n: integer
@@ -46,6 +49,11 @@ typedef struct instruction_s
         void (*routine)(stack_t **stack, unsigned int line_number);
 } instruction_t;
 
+typedef struct {
+	stack_t **stk_stque;
+	unsigned int stk_line;
+	int stk_counter, stk_mode;
+}  _global_tmp;
 
 void monty_push_stack(stack_t **stack, unsigned int line_number);
 void monty_pop_stack(stack_t **stack, unsigned int line_number);
@@ -55,4 +63,5 @@ void monty_swap_stack(stack_t **stack, unsigned int line_number);
 void monty_add_stack(stack_t **stack, unsigned int line_number);
 void monty_sub_stack(stack_t **stack, unsigned int line_number);
 void monty_nop_stack(stack_t **stack, unsigned int line_number);
+
 #endif
