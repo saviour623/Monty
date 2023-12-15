@@ -32,9 +32,23 @@ void monty_push_stack(stack_t **stack, unsigned int line_number)
 		(*stack)->next = new_stack;
 		*stack = new_stack;
 	}
+	glbstack_s.stk_counter += 1;
 }
 void monty_pop_stack(stack_t **stack, unsigned int line_number __unused__)
 {
+	stack_t *ptr;
+	if (stack == NULL || *stack == NULL)
+	{
+		fprintf(stderr, "L<%u>: can't pop an empty stack\n", glbstack_s.stk_line);
+		exit(EXIT_FAILURE);
+	}
+	ptr = *stack;
+	*stack = (*stack)->prev;
+	(*stack)->next = NULL;
+	free(ptr);
+	ptr = NULL;
+
+	glbstack_s.stk_counter -= 1;
 }
 void monty_print_stack(stack_t **stack, unsigned int line_number)
 {
@@ -51,7 +65,10 @@ void monty_print_stack(stack_t **stack, unsigned int line_number)
 void monty_pint_stack(stack_t **stack, unsigned int line_number)
 {
 	if (stack == NULL || *stack == NULL)
-		fprintf(stderr, "L<line_number>: can't pint, stack empty");
+	{
+		fprintf(stderr, "L<%u>: can't pint, stack empty\n", glbstack_s.stk_line);
+		exit(EXIT_FAILURE);
+	}
 	fprintf(stdout, "%u\n", (*stack)->n);
 }
 void monty_swap_stack(stack_t **stack, unsigned int line_number)
