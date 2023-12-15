@@ -86,6 +86,28 @@ char **getcmdstring(char *__restrict__ arg)
 		,{"swap", monty_swap_stack}, {"add", monty_add_stack}			\
 		,{"sub", monty_sub_stack}, {"nop", monty_nop_stack}, NULL			\
 	}
+/* get integer */
+#include <limits.h>
+int get_int(char *s, int *vlue)
+{
+	register long int n = 0, sgn = 1;
+	register int c;
+	if (s == NULL || vlue == NULL || *s == 0)
+		return -1;
+	if (*s == '-')
+	{
+		sgn = -1;
+		s++;
+	}
+	for (; (c = *s); s++)
+	{
+		if ((c < 48 || c > 57) || n > INT_MAX)
+			return ((n = 0), -1);
+		n = ((n << 3) + (n << 1)) + (c - 48);
+	}
+	*vlue = sgn * n;
+	return 0;
+}
 int main(int argc, char **argv)
 {
 	register int oo, lncnt = 1;
@@ -93,8 +115,10 @@ int main(int argc, char **argv)
 	char *bytefile = NULL;
 	char *ln = NULL, *tmp, **instrc = NULL;
 	size_t rd = 0;
+	int vlue;
 	instruction_t op_routine[] = _MAP_OP_INSTRUCTION_R();
-	stack_t *monty_stack = NULL;
+	stack_t *monty_stack = NULL, *stack_pointer = NULL;
+	struct stat statbf;
 
 	if (argc != 2)
 	{
@@ -102,20 +126,22 @@ int main(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 	bytefile = argv[argc - 1];
+	if (stat(bytefile, &statbf) == -1 || (statbf.st_mode & S_IFMT) != S_IFREG)
+		goto openErr;
 	F = fopen(bytefile, "r");
-
 	if (F == NULL)
 	{
+	openErr:
 		fprintf(stderr, "Error: Can't open file <%s>\n", bytefile);
 		exit(EXIT_FAILURE);
 	}
-	while (lncnt++)
+	for (; true; lncnt++)
 	{
 		if (getline(&ln, &rd, F) == -1)
 		{
 			if (errno == ENOMEM)
 			{
-				fprintf(stderr, "Error: Can't open file <%s>\n", bytefile);
+				fprintf(stderr, "Error: malloc failed\n");
 				exit(EXIT_FAILURE);
 			}
 			break;
@@ -125,7 +151,12 @@ int main(int argc, char **argv)
 		for (oo = 0; (tmp = op_routine[oo].opcode) != NULL; oo++)
 		{
 			if (strcmp(tmp, *instrc) == 0)
-				op_routine[oo].routine(&monty_stack, lncnt);
+			{
+				/* TODO: if opcode requires a value and none is given or an errorneous value is given raise an error */
+				get_int(instrc[1], &vlue) == -1 ? (vlue = -INT_MAX) : 0;
+				op_routine[oo].routine(&monty_stack, vlue);
+				goto reuse;
+			}
 		}
 		/* if tmp ever gets to null, that means there isn't any opcode that matches the inputed instruction */
 		if (tmp == NULL)
@@ -134,6 +165,7 @@ int main(int argc, char **argv)
 			/* TODO: do cleanup here */
 			exit(EXIT_FAILURE);
 		}
+	reuse:
 		rd = 0;
 		free(ln);
 		ln = NULL;
