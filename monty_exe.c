@@ -89,10 +89,32 @@ void monty_swap_stack(stack_t **stack, unsigned int line_number)
 }
 void monty_add_stack(stack_t **stack, unsigned int line_number)
 {
+	stack_t *ptr;
+
+	if (stack == NULL || *stack == NULL)
+	{
+		fprintf(stderr, "L<%u>: can't swap, stack empty\n", glbstack_s.stk_line);
+		exit(EXIT_FAILURE);
+	}
+	else if (glbstack_s.stk_counter < 2)
+	{
+		fprintf(stderr, "L<%u>: can't add, stack too short\n", glbstack_s.stk_line);
+		exit(EXIT_FAILURE);
+	}
+	ptr = *stack;
+	(*stack)->prev->n += (*stack)->n;
+	*stack = (*stack)->prev;
+	(*stack)->next = NULL;
+	free(ptr);
+	ptr = NULL;
+
+	glbstack_s.stk_counter -= 1;
+
 }
 void monty_sub_stack(stack_t **stack, unsigned int line_number)
 {
 }
-void monty_nop_stack(stack_t **stack, unsigned int line_number)
+void monty_nop_stack(stack_t **stack __unused__, unsigned int line_number __unused__)
 {
+	/* do nothing */
 }
