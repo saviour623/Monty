@@ -272,14 +272,14 @@ void monty_rotr_stack(stack_t **stack, unsigned int line_number)
 	if (stack == NULL || *stack == NULL || glbstack_s.stk_counter < 2)
 		return;
 	rg = glbstack_s.stk_stque;
-	(*stack)->prev->next = NULL;
+	lt = rg->next;
+	lt->prev = NULL;
 	rg->prev = *stack;
-	lt = (*stack)->prev;
-	(*stack)->prev = NULL;
+	rg->next = NULL;
 	(*stack)->next = rg;
 
-	rg = *stack;
-	*stack = lt;
+	*stack = rg;
+	rg = lt;
 }
 void monty_rot_stack(stack_t **stack, unsigned int line_number)
 {
