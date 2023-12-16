@@ -87,6 +87,23 @@ void monty_pchar_stack(stack_t **stack, unsigned int line_number)
 	}
 	fprintf(stdout, "%c\n", (unsigned char)c);
 }
+void monty_pstr_stack(stack_t **stack, unsigned int line_number)
+{
+	register int c;
+	register stack_t *iter;
+
+	if (stack == NULL || *stack == NULL)
+	{
+		fprintf(stderr, "L<%u>: can't pchar, stack empty\n", glbstack_s.stk_line);
+		exit(EXIT_FAILURE);
+	}
+	iter = *stack;
+	if (iter->n < 0 || iter->n > 255)
+		return;
+	for (; iter != NULL && (c = iter->n) && !(c < 0 || c > 255); (iter = iter->prev))
+		fputc((unsigned char)c, stdout);
+	fputc('\n', stdout);
+}
 void monty_swap_stack(stack_t **stack, unsigned int line_number)
 {
 	if (stack == NULL || *stack == NULL)
