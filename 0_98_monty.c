@@ -85,7 +85,10 @@ char **getcmdstring(char *__restrict__ arg)
 		{"push", monty_push_stack}, {"pop", monty_pop_stack}			\
 		,{"pall", monty_print_stack}, {"pint", monty_pint_stack}		\
 		,{"swap", monty_swap_stack}, {"add", monty_add_stack}			\
-		,{"sub", monty_sub_stack}, {"nop", monty_nop_stack}, NULL			\
+		,{"sub", monty_sub_stack}, {"nop", monty_nop_stack}\
+		,{"div", monty_div_stack}, {"mul", monty_mul_stack}\
+		,{"mod", monty_mod_stack}, {"pchar", monty_pchar_stack}\
+		, NULL												   \
 	}
 /* get integer */
 #include <limits.h>
@@ -152,6 +155,9 @@ int main(int argc, char **argv)
 		instrc = getcmdstring(ln);
 		for (oo = 0; (tmp = op_routine[oo].opcode) != NULL; oo++)
 		{
+			/* comment */
+			if (**instrc == '#')
+				goto reuse;
 			if (strcmp(tmp, *instrc) == 0)
 			{
 				/* TODO: if opcode requires a value and none is given or an errorneous value is given raise an error */

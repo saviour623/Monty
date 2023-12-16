@@ -71,6 +71,22 @@ void monty_pint_stack(stack_t **stack, unsigned int line_number)
 	}
 	fprintf(stdout, "%u\n", (*stack)->n);
 }
+void monty_pchar_stack(stack_t **stack, unsigned int line_number)
+{
+	register int c;
+	if (stack == NULL || *stack == NULL)
+	{
+		fprintf(stderr, "L<%u>: can't pchar, stack empty\n", glbstack_s.stk_line);
+		exit(EXIT_FAILURE);
+	}
+	c = (*stack)->n;
+	if (c < 0 || c > 255)
+	{
+		fprintf(stderr, "L<%u>: can't pchar, value out of range\n", glbstack_s.stk_line);
+		exit(EXIT_FAILURE);
+	}
+	fprintf(stdout, "%c\n", (unsigned char)c);
+}
 void monty_swap_stack(stack_t **stack, unsigned int line_number)
 {
 	if (stack == NULL || *stack == NULL)
@@ -93,7 +109,7 @@ void monty_add_stack(stack_t **stack, unsigned int line_number)
 
 	if (stack == NULL || *stack == NULL)
 	{
-		fprintf(stderr, "L<%u>: can't swap, stack empty\n", glbstack_s.stk_line);
+		fprintf(stderr, "L<%u>: can't add, stack empty\n", glbstack_s.stk_line);
 		exit(EXIT_FAILURE);
 	}
 	else if (glbstack_s.stk_counter < 2)
@@ -113,6 +129,109 @@ void monty_add_stack(stack_t **stack, unsigned int line_number)
 }
 void monty_sub_stack(stack_t **stack, unsigned int line_number)
 {
+	stack_t *ptr;
+
+	if (stack == NULL || *stack == NULL)
+	{
+		fprintf(stderr, "L<%u>: can't sub, stack empty\n", glbstack_s.stk_line);
+		exit(EXIT_FAILURE);
+	}
+	else if (glbstack_s.stk_counter < 2)
+	{
+		fprintf(stderr, "L<%u>: can't add, stack too short\n", glbstack_s.stk_line);
+		exit(EXIT_FAILURE);
+	}
+	ptr = *stack;
+	(*stack)->prev->n -= (*stack)->n;
+	*stack = (*stack)->prev;
+	(*stack)->next = NULL;
+	free(ptr);
+	ptr = NULL;
+
+	glbstack_s.stk_counter -= 1;
+
+}
+void monty_div_stack(stack_t **stack, unsigned int line_number)
+{
+	stack_t *ptr;
+
+	if (stack == NULL || *stack == NULL)
+	{
+		fprintf(stderr, "L<%u>: can't div, stack empty\n", glbstack_s.stk_line);
+		exit(EXIT_FAILURE);
+	}
+	else if (glbstack_s.stk_counter < 2)
+	{
+		fprintf(stderr, "L<%u>: can't add, stack too short\n", glbstack_s.stk_line);
+		exit(EXIT_FAILURE);
+	}
+	if ((*stack)->n == 0)
+	{
+		fprintf(stderr, "L<%u>: division by zero\n", glbstack_s.stk_line);
+		exit(EXIT_FAILURE);
+	}
+	ptr = *stack;
+	(*stack)->prev->n /= (*stack)->n;
+	*stack = (*stack)->prev;
+	(*stack)->next = NULL;
+	free(ptr);
+	ptr = NULL;
+
+	glbstack_s.stk_counter -= 1;
+
+}
+void monty_mod_stack(stack_t **stack, unsigned int line_number)
+{
+	stack_t *ptr;
+
+	if (stack == NULL || *stack == NULL)
+	{
+		fprintf(stderr, "L<%u>: can't div, stack empty\n", glbstack_s.stk_line);
+		exit(EXIT_FAILURE);
+	}
+	else if (glbstack_s.stk_counter < 2)
+	{
+		fprintf(stderr, "L<%u>: can't add, stack too short\n", glbstack_s.stk_line);
+		exit(EXIT_FAILURE);
+	}
+	if ((*stack)->n == 0)
+	{
+		fprintf(stderr, "L<%u>: division by zero\n", glbstack_s.stk_line);
+		exit(EXIT_FAILURE);
+	}
+	ptr = *stack;
+	(*stack)->prev->n %= (*stack)->n;
+	*stack = (*stack)->prev;
+	(*stack)->next = NULL;
+	free(ptr);
+	ptr = NULL;
+
+	glbstack_s.stk_counter -= 1;
+
+}
+void monty_mul_stack(stack_t **stack, unsigned int line_number)
+{
+	stack_t *ptr;
+
+	if (stack == NULL || *stack == NULL)
+	{
+		fprintf(stderr, "L<%u>: can't mul, stack empty\n", glbstack_s.stk_line);
+		exit(EXIT_FAILURE);
+	}
+	else if (glbstack_s.stk_counter < 2)
+	{
+		fprintf(stderr, "L<%u>: can't mul, stack too short\n", glbstack_s.stk_line);
+		exit(EXIT_FAILURE);
+	}
+	ptr = *stack;
+	(*stack)->prev->n *= (*stack)->n;
+	*stack = (*stack)->prev;
+	(*stack)->next = NULL;
+	free(ptr);
+	ptr = NULL;
+
+	glbstack_s.stk_counter -= 1;
+
 }
 void monty_nop_stack(stack_t **stack __unused__, unsigned int line_number __unused__)
 {
