@@ -1,7 +1,6 @@
 #include "monty.h"
 extern _global_tmp glbstack_s;
-//stk_line
-//stk_stque
+
 void monty_push_stack(stack_t **stack, unsigned int line_number)
 {
 	stack_t *new_stack = malloc(sizeof(stack_t));
@@ -252,6 +251,38 @@ void monty_mul_stack(stack_t **stack, unsigned int line_number)
 }
 void monty_rotl_stack(stack_t **stack, unsigned int line_number)
 {
+	register stack_t *rg, *lt;
+
+	if (stack == NULL || *stack == NULL || glbstack_s.stk_counter < 2)
+		return;
+	rg = glbstack_s.stk_stque;
+	(*stack)->prev->next = NULL;
+	rg->prev = *stack;
+	lt = (*stack)->prev;
+	(*stack)->prev = NULL;
+	(*stack)->next = rg;
+
+	rg = *stack;
+	*stack = lt;
+}
+void monty_rotr_stack(stack_t **stack, unsigned int line_number)
+{
+	register stack_t *rg, *lt;
+
+	if (stack == NULL || *stack == NULL || glbstack_s.stk_counter < 2)
+		return;
+	rg = glbstack_s.stk_stque;
+	(*stack)->prev->next = NULL;
+	rg->prev = *stack;
+	lt = (*stack)->prev;
+	(*stack)->prev = NULL;
+	(*stack)->next = rg;
+
+	rg = *stack;
+	*stack = lt;
+}
+void monty_rot_stack(stack_t **stack, unsigned int line_number)
+{
 	register unsigned int half;
 	register stack_t *rg, *lt;
 
@@ -261,15 +292,15 @@ void monty_rotl_stack(stack_t **stack, unsigned int line_number)
 	rg = glbstack_s.stk_stque;
 	lt = *stack;
 
-/*	0 1, 9 */
-	(*stack)->prev->next = NULL;
-	rg->prev = *stack;
-	lt = (*stack)->prev;
-	(*stack)->prev = NULL;
-	(*stack)->next = rg;
+	while (half--)
+	{
+		rg->n ^= lt->n;
+		lt->n ^= rg->n;
+		rg->n ^= lt->n;
 
-	rg = *stack;
-	*stack = lt;
+		rg = rg->next;
+		lt = lt->prev;
+	}
 }
 void monty_nop_stack(stack_t **stack __unused__, unsigned int line_number __unused__)
 {

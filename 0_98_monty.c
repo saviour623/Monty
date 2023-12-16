@@ -88,7 +88,8 @@ char **getcmdstring(char *__restrict__ arg)
 		,{"sub", monty_sub_stack}, {"nop", monty_nop_stack}\
 		,{"div", monty_div_stack}, {"mul", monty_mul_stack}\
 		,{"mod", monty_mod_stack}, {"pchar", monty_pchar_stack}\
-		,{"pstr", monty_pstr_stack}, {"rotl", monty_rotl_stack}, NULL	\
+		,{"pstr", monty_pstr_stack}, {"rot", monty_rot_stack}\
+		,{"rotl", monty_rotl_stack}, {"rotr", monty_rotr_stack}, NULL	\
 	}
 /* get integer */
 #include <limits.h>
