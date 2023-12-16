@@ -50,7 +50,7 @@ typedef struct instruction_s
 } instruction_t;
 
 typedef struct {
-	stack_t **stk_stque;
+	stack_t *stk_stque;
 	unsigned int stk_line;
 	int stk_counter, stk_mode;
 }  _global_tmp;
@@ -68,5 +68,6 @@ void monty_div_stack(stack_t **stack, unsigned int line_number);
 void monty_mod_stack(stack_t **stack, unsigned int line_number);
 void monty_mul_stack(stack_t **stack, unsigned int line_number);
 void monty_nop_stack(stack_t **stack, unsigned int line_number);
+void monty_rotl_stack(stack_t **stack, unsigned int line_number);
 
 #endif

@@ -22,7 +22,7 @@ void monty_push_stack(stack_t **stack, unsigned int line_number)
 		new_stack->n = line_number;
 		*stack = new_stack;
 		/* update the global stack head */
-		glbstack_s.stk_stque = stack;
+		glbstack_s.stk_stque = *stack;
 	}
 	else
 	{
@@ -249,6 +249,27 @@ void monty_mul_stack(stack_t **stack, unsigned int line_number)
 
 	glbstack_s.stk_counter -= 1;
 
+}
+void monty_rotl_stack(stack_t **stack, unsigned int line_number)
+{
+	register unsigned int half;
+	register stack_t *rg, *lt;
+
+	if (stack == NULL || *stack == NULL || glbstack_s.stk_counter < 2)
+		return;
+	half = glbstack_s.stk_counter /  2;
+	rg = glbstack_s.stk_stque;
+	lt = *stack;
+
+/*	0 1, 9 */
+	(*stack)->prev->next = NULL;
+	rg->prev = *stack;
+	lt = (*stack)->prev;
+	(*stack)->prev = NULL;
+	(*stack)->next = rg;
+
+	rg = *stack;
+	*stack = lt;
 }
 void monty_nop_stack(stack_t **stack __unused__, unsigned int line_number __unused__)
 {
