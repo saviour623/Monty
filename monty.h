@@ -16,9 +16,11 @@
 #else
 #define __unused__ [[unused]]
 #endif
+#define S_OPMODE 0x06
 #define S_OPQUEUE 0x04
 #define S_OPSTACK 0x02
-#define S_VALNPUT 0X01
+#define S_VALNPUT 0x01
+
 /**
  * struct stack_s - doubly linked list representation of a stack (or queue)
  * @n: integer
