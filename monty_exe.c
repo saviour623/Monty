@@ -302,6 +302,16 @@ void monty_rot_stack(stack_t **stack, unsigned int line_number)
 		lt = lt->prev;
 	}
 }
+void monty_stack(stack_t **stack __unused__, unsigned int line_number)
+{
+	glbstack_s.stk_mode &= ~S_OPQUEUE;
+	glbstack_s.stk_mode |= S_OPSTACK;
+}
+void monty_queue(stack_t **stack __unused__, unsigned int line_number __unused__)
+{
+	glbstack_s.stk_mode &= ~S_OPSTACK;
+	glbstack_s.stk_mode |= S_OPQUEUE;
+}
 void monty_nop_stack(stack_t **stack __unused__, unsigned int line_number __unused__)
 {
 	/* do nothing */
