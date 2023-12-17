@@ -73,4 +73,7 @@ void monty_nop_stack(stack_t **stack, unsigned int line_number);
 void monty_rot_stack(stack_t **stack, unsigned int line_number);
 void monty_rotl_stack(stack_t **stack, unsigned int line_number);
 void monty_rotr_stack(stack_t **stack, unsigned int line_number);
+void monty_stack(stack_t **stack, unsigned int line_number);
+void monty_queue(stack_t **stack, unsigned int line_number);
+
 #endif

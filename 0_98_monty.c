@@ -80,16 +80,18 @@ char **getcmdstring(char *__restrict__ arg)
 	return buftok;
 }
 
-#define _MAP_OP_INSTRUCTION_R()\
-	{														\
+#define _MAP_OP_INSTRUCTION_R()											\
+	{																	\
 		{"push", monty_push_stack}, {"pop", monty_pop_stack}			\
-		,{"pall", monty_print_stack}, {"pint", monty_pint_stack}		\
-		,{"swap", monty_swap_stack}, {"add", monty_add_stack}			\
-		,{"sub", monty_sub_stack}, {"nop", monty_nop_stack}\
-		,{"div", monty_div_stack}, {"mul", monty_mul_stack}\
-		,{"mod", monty_mod_stack}, {"pchar", monty_pchar_stack}\
-		,{"pstr", monty_pstr_stack}, {"rot", monty_rot_stack}\
-		,{"rotl", monty_rotl_stack}, {"rotr", monty_rotr_stack}, NULL	\
+			,{"pall", monty_print_stack}, {"pint", monty_pint_stack}	\
+			,{"swap", monty_swap_stack}, {"add", monty_add_stack}		\
+			,{"sub", monty_sub_stack}, {"nop", monty_nop_stack}			\
+			,{"div", monty_div_stack}, {"mul", monty_mul_stack}			\
+			,{"mod", monty_mod_stack}, {"pchar", monty_pchar_stack}		\
+			,{"pstr", monty_pstr_stack}, {"rot", monty_rot_stack}		\
+			,{"rotl", monty_rotl_stack}, {"rotr", monty_rotr_stack}		\
+			,{"stack", monty_stack}, {"queue", monty_queue}				\
+			,{NULL, NULL}												\
 	}
 /* get integer */
 #include <limits.h>
@@ -163,7 +165,7 @@ int main(int argc, char **argv)
 			{
 				/* TODO: if opcode requires a value and none is given or an errorneous value is given raise an error */
 				glbstack_s.stk_line = lncnt;
-				glbstack_s.stk_mode = !(get_int(instrc[1], &vlue)) & S_VALNPUT;
+				glbstack_s.stk_mode |= !(get_int(instrc[1], &vlue)) & S_VALNPUT;
 				op_routine[oo].routine(&monty_stack, vlue);
 				goto reuse;
 			}

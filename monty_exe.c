@@ -36,37 +36,30 @@ void monty_push_stack(stack_t **stack, unsigned int line_number)
 void monty_pop_stack(stack_t **stack, unsigned int line_number __unused__)
 {
 	register stack_t *ptr;
-	register mode_t mode;
 
 	if (stack == NULL || *stack == NULL)
 	{
 		fprintf(stderr, "L<%u>: can't pop an empty stack\n", glbstack_s.stk_line);
 		exit(EXIT_FAILURE);
 	}
-	mode = glbstack_s.stk_mode & S_OPSTACK;
-	ptr = mode ? *stack : glbstack_s.stk_stque;
+	/* if mode is set to stack, pop as LIFO else pop as FIFO (queue) */
+	(glbstack_s.stk_mode & S_OPMODE) ==  S_OPSTACK
+		? ((ptr = *stack),
+			(*stack = (*stack)->prev),
+			((*stack)->next = NULL))
+		: ((ptr = glbstack_s.stk_stque),
+		 (glbstack_s.stk_stque = ptr->next),
+		 (glbstack_s.stk_stque->prev = NULL));
 
-	if (mode)
-	{
-		*stack = (*stack)->prev;
-		(*stack)->next = NULL;
-	}
-	else
-	{
-	    glbstack_s.stk_stque = glbstack_s.stk_stque->next;
-		glbstack_s.stk_stque->prev = NULL;
-	}
 	free(ptr);
 	ptr = NULL;
-
 	glbstack_s.stk_counter -= 1;
 }
 void monty_print_stack(stack_t **stack, unsigned int line_number)
 {
 	register stack_t *iter;
-	register mode_t mode = (glbstack_s.stk_mode & S_OPMODE) == S_OPSTACK;
+	register mode_t mode = ((glbstack_s.stk_mode & S_OPMODE) == S_OPSTACK);
 
-	printf("mode %d\n", mode);
 	iter = mode ? *stack : glbstack_s.stk_stque;
 	if (iter == NULL || stack == NULL)
 		return;
@@ -317,7 +310,7 @@ void monty_rot_stack(stack_t **stack, unsigned int line_number)
 		lt = lt->prev;
 	}
 }
-void monty_stack(stack_t **stack __unused__, unsigned int line_number)
+void monty_stack(stack_t **stack __unused__, unsigned int line_number __unused__)
 {
 	glbstack_s.stk_mode &= ~S_OPQUEUE;
 	glbstack_s.stk_mode |= S_OPSTACK;
