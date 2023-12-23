@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include <errno.h>
 #include <unistd.h>
 #include <sys/fcntl.h>
@@ -14,13 +15,13 @@
 #if __GNUC__
 #define __unused__ __attribute__((unused))
 #else
-#define __unused__ [[unused]]
+#define __unused__
 #endif
 #define S_OPMODE 0x06
 #define S_OPQUEUE 0x04
 #define S_OPSTACK 0x02
 #define S_VALNPUT 0x01
-
+#define MDE_ISQUEUE(m) (!(((m) & S_OPMODE) ^ S_OPQUEUE))
 /**
  * struct stack_s - doubly linked list representation of a stack (or queue)
  * @n: integer
@@ -48,7 +49,7 @@ typedef struct stack_s
 typedef struct instruction_s
 {
         char *opcode;
-        void (*routine)(stack_t **stack, unsigned int line_number);
+        void (*routine)(stack_t **stack, int n);
 } instruction_t;
 
 typedef struct {
@@ -57,23 +58,23 @@ typedef struct {
 	int stk_counter, stk_mode;
 }  _global_tmp;
 
-void monty_push_stack(stack_t **stack, unsigned int line_number);
-void monty_pop_stack(stack_t **stack, unsigned int line_number);
-void monty_print_stack(stack_t **stack, unsigned int line_number);
-void monty_pint_stack(stack_t **stack, unsigned int line_number);
-void monty_pchar_stack(stack_t **stack, unsigned int line_number);
-void monty_pstr_stack(stack_t **stack, unsigned int line_number);
-void monty_swap_stack(stack_t **stack, unsigned int line_number);
-void monty_add_stack(stack_t **stack, unsigned int line_number);
-void monty_sub_stack(stack_t **stack, unsigned int line_number);
-void monty_div_stack(stack_t **stack, unsigned int line_number);
-void monty_mod_stack(stack_t **stack, unsigned int line_number);
-void monty_mul_stack(stack_t **stack, unsigned int line_number);
-void monty_nop_stack(stack_t **stack, unsigned int line_number);
-void monty_rot_stack(stack_t **stack, unsigned int line_number);
-void monty_rotl_stack(stack_t **stack, unsigned int line_number);
-void monty_rotr_stack(stack_t **stack, unsigned int line_number);
-void monty_stack(stack_t **stack, unsigned int line_number);
-void monty_queue(stack_t **stack, unsigned int line_number);
+void monty_push_stack(stack_t **, int);
+void monty_pop_stack(stack_t **, int);
+void monty_print_stack(stack_t **, int);
+void monty_pint_stack(stack_t **, int);
+void monty_pchar_stack(stack_t **, int);
+void monty_pstr_stack(stack_t **, int);
+void monty_swap_stack(stack_t **, int);
+void monty_add_stack(stack_t **, int);
+void monty_sub_stack(stack_t **, int);
+void monty_div_stack(stack_t **, int);
+void monty_mod_stack(stack_t **, int);
+void monty_mul_stack(stack_t **, int);
+void monty_nop_stack(stack_t **, int);
+void monty_rot_stack(stack_t **, int);
+void monty_rotl_stack(stack_t **, int);
+void monty_rotr_stack(stack_t **, int);
+void monty_stack(stack_t **, int);
+void monty_queue(stack_t **, int);
 
 #endif

@@ -1,7 +1,7 @@
 #include "monty.h"
 extern _global_tmp glbstack_s;
 
-void monty_push_stack(stack_t **stack, unsigned int line_number)
+void monty_push_stack(stack_t **stack, int n)
 {
 	stack_t *new_stack = malloc(sizeof(stack_t));
 
@@ -10,30 +10,36 @@ void monty_push_stack(stack_t **stack, unsigned int line_number)
 		fprintf(stderr, "ERROR: malloc failed\n");
 		exit(EXIT_FAILURE);
 	}
-	if (!(glbstack_s.stk_mode & S_VALNPUT))
+	if ((! glbstack_s.stk_mode & S_VALNPUT))
 	{
 		fprintf(stderr, "L<%u>: usage: push integer\n", glbstack_s.stk_line);
 		exit(EXIT_FAILURE);
 	}
+	new_stack->n = n;
 	if (*stack == NULL)
 	{
 		new_stack->prev = new_stack->next = NULL;
-		new_stack->n = line_number;
 		*stack = new_stack;
-		/* update the global stack head */
+		/* stk_stqueue keeps track of the stack's head pointer */
 		glbstack_s.stk_stque = *stack;
 	}
-	else
+	else if (MDE_ISQUEUE(glbstack_s.stk_mode))
 	{
-		new_stack->n = line_number;
+		new_stack->next = *stack;
+		new_stack->prev = NULL;
+		glbstack_s.stk_stque->prev = new_stack;
+		glbstack_s.stk_stque = new_stack;
+	}
+	else {
 		new_stack->prev = *stack;
 		new_stack->next = NULL;
 		(*stack)->next = new_stack;
 		*stack = new_stack;
 	}
+	/* stack counter */
 	glbstack_s.stk_counter += 1;
 }
-void monty_pop_stack(stack_t **stack, unsigned int line_number __unused__)
+void monty_pop_stack(stack_t **stack, int n __unused__)
 {
 	register stack_t *ptr;
 
@@ -42,34 +48,27 @@ void monty_pop_stack(stack_t **stack, unsigned int line_number __unused__)
 		fprintf(stderr, "L<%u>: can't pop an empty stack\n", glbstack_s.stk_line);
 		exit(EXIT_FAILURE);
 	}
-	/* if mode is set to stack, pop as LIFO else pop as FIFO (queue) */
-	(glbstack_s.stk_mode & S_OPMODE) ==  S_OPSTACK
-		? ((ptr = *stack),
-			(*stack = (*stack)->prev),
-			((*stack)->next = NULL))
-		: ((ptr = glbstack_s.stk_stque),
-		 (glbstack_s.stk_stque = ptr->next),
-		 (glbstack_s.stk_stque->prev = NULL));
+	ptr = *stack;
+	*stack = (*stack)->prev;
+	(*stack)->next = NULL;
 
 	free(ptr);
 	ptr = NULL;
 	glbstack_s.stk_counter -= 1;
 }
-void monty_print_stack(stack_t **stack, unsigned int line_number)
+void monty_print_stack(stack_t **stack, int n __unused__)
 {
 	register stack_t *iter;
-	register mode_t mode = ((glbstack_s.stk_mode & S_OPMODE) == S_OPSTACK);
 
-	iter = mode ? *stack : glbstack_s.stk_stque;
-	if (iter == NULL || stack == NULL)
+	if (stack == NULL || *stack == NULL)
 		return;
-	while (iter != NULL)
+	for (iter = *stack; iter != NULL; true)
 	{
 		fprintf(stdout, "%u\n", iter->n);
-		iter = mode ? iter->prev : iter->next;
+		iter = iter->prev;
 	}
 }
-void monty_pint_stack(stack_t **stack, unsigned int line_number)
+void monty_pint_stack(stack_t **stack, int n __unused__)
 {
 	if (stack == NULL || *stack == NULL)
 	{
@@ -78,7 +77,7 @@ void monty_pint_stack(stack_t **stack, unsigned int line_number)
 	}
 	fprintf(stdout, "%u\n", (*stack)->n);
 }
-void monty_pchar_stack(stack_t **stack, unsigned int line_number)
+void monty_pchar_stack(stack_t **stack, int n __unused__)
 {
 	register int c;
 	if (stack == NULL || *stack == NULL)
@@ -94,7 +93,7 @@ void monty_pchar_stack(stack_t **stack, unsigned int line_number)
 	}
 	fprintf(stdout, "%c\n", (unsigned char)c);
 }
-void monty_pstr_stack(stack_t **stack, unsigned int line_number)
+void monty_pstr_stack(stack_t **stack, int n __unused__)
 {
 	register int c;
 	register stack_t *iter;
@@ -111,7 +110,7 @@ void monty_pstr_stack(stack_t **stack, unsigned int line_number)
 		fputc((unsigned char)c, stdout);
 	fputc('\n', stdout);
 }
-void monty_swap_stack(stack_t **stack, unsigned int line_number)
+void monty_swap_stack(stack_t **stack, int n __unused__)
 {
 	if (stack == NULL || *stack == NULL)
 	{
@@ -127,7 +126,7 @@ void monty_swap_stack(stack_t **stack, unsigned int line_number)
 	(*stack)->prev->n ^= (*stack)->n;
 	(*stack)->n ^= (*stack)->prev->n;
 }
-void monty_add_stack(stack_t **stack, unsigned int line_number)
+void monty_add_stack(stack_t **stack, int n __unused__)
 {
 	stack_t *ptr;
 
@@ -151,7 +150,7 @@ void monty_add_stack(stack_t **stack, unsigned int line_number)
 	glbstack_s.stk_counter -= 1;
 
 }
-void monty_sub_stack(stack_t **stack, unsigned int line_number)
+void monty_sub_stack(stack_t **stack, int n __unused__)
 {
 	stack_t *ptr;
 
@@ -175,7 +174,7 @@ void monty_sub_stack(stack_t **stack, unsigned int line_number)
 	glbstack_s.stk_counter -= 1;
 
 }
-void monty_div_stack(stack_t **stack, unsigned int line_number)
+void monty_div_stack(stack_t **stack, int n __unused__)
 {
 	stack_t *ptr;
 
@@ -204,7 +203,7 @@ void monty_div_stack(stack_t **stack, unsigned int line_number)
 	glbstack_s.stk_counter -= 1;
 
 }
-void monty_mod_stack(stack_t **stack, unsigned int line_number)
+void monty_mod_stack(stack_t **stack, int n __unused__)
 {
 	stack_t *ptr;
 
@@ -233,7 +232,7 @@ void monty_mod_stack(stack_t **stack, unsigned int line_number)
 	glbstack_s.stk_counter -= 1;
 
 }
-void monty_mul_stack(stack_t **stack, unsigned int line_number)
+void monty_mul_stack(stack_t **stack, int n __unused__)
 {
 	stack_t *ptr;
 
@@ -257,7 +256,7 @@ void monty_mul_stack(stack_t **stack, unsigned int line_number)
 	glbstack_s.stk_counter -= 1;
 
 }
-void monty_rotl_stack(stack_t **stack, unsigned int line_number)
+void monty_rotl_stack(stack_t **stack, int n __unused__)
 {
 	register stack_t *rg, *lt;
 
@@ -273,7 +272,7 @@ void monty_rotl_stack(stack_t **stack, unsigned int line_number)
 	rg = *stack;
 	*stack = lt;
 }
-void monty_rotr_stack(stack_t **stack, unsigned int line_number)
+void monty_rotr_stack(stack_t **stack, int n __unused__)
 {
 	register stack_t *rg, *lt;
 
@@ -289,7 +288,7 @@ void monty_rotr_stack(stack_t **stack, unsigned int line_number)
 	*stack = rg;
 	rg = lt;
 }
-void monty_rot_stack(stack_t **stack, unsigned int line_number)
+void monty_rot_stack(stack_t **stack, int n __unused__)
 {
 	register unsigned int half;
 	register stack_t *rg, *lt;
@@ -310,17 +309,17 @@ void monty_rot_stack(stack_t **stack, unsigned int line_number)
 		lt = lt->prev;
 	}
 }
-void monty_stack(stack_t **stack __unused__, unsigned int line_number __unused__)
+void monty_stack(stack_t **stack __unused__, int n __unused__)
 {
 	glbstack_s.stk_mode &= ~S_OPQUEUE;
 	glbstack_s.stk_mode |= S_OPSTACK;
 }
-void monty_queue(stack_t **stack __unused__, unsigned int line_number __unused__)
+void monty_queue(stack_t **stack __unused__, int n __unused__)
 {
 	glbstack_s.stk_mode &= ~S_OPSTACK;
 	glbstack_s.stk_mode |= S_OPQUEUE;
 }
-void monty_nop_stack(stack_t **stack __unused__, unsigned int line_number __unused__)
+void monty_nop_stack(stack_t **stack __unused__, int n __unused__)
 {
 	/* do nothing */
 }

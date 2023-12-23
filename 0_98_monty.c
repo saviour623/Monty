@@ -124,7 +124,7 @@ int main(int argc, char **argv)
 	size_t rd = 0;
 	int vlue;
 	instruction_t op_routine[] = _MAP_OP_INSTRUCTION_R();
-	stack_t *monty_stack = NULL, *stack_pointer = NULL;
+	stack_t *monty_stack = NULL;
 	struct stat statbf;
 
 	if (argc != 2)
